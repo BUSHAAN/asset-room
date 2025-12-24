@@ -81,15 +81,15 @@ export default function Home() {
     <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-          <div className="flex items-center gap-4">
+        <div className="mb-12 flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <Link href="/" className="flex items-center">
               <Image
                 src="/logo.png"
                 alt="Asset Room Logo"
                 width={48}
                 height={48}
-                className="w-12 h-12"
+                className="w-12 h-12 rounded-md"
                 priority
               />
             </Link>
@@ -98,12 +98,12 @@ export default function Home() {
                 Asset Room
               </h1>
               <p className="text-[#171718]/70 text-sm">
-                Your personal design resource library
+                Never Lose a great resource again!
               </p>
             </div>
           </div>
           <div className="flex gap-3">
-            {user ? (
+            {user && (
               <>
                 <Link
                   href="/add"
@@ -118,13 +118,6 @@ export default function Home() {
                   Logout
                 </button>
               </>
-            ) : (
-              <Link
-                href="/login"
-                className="px-6 py-2.5 bg-[#171718] hover:bg-[#171718]/90 text-[#ECE7E1] font-medium rounded-full transition-all duration-300 hover:shadow-lg text-sm"
-              >
-                Login
-              </Link>
             )}
           </div>
         </div>
@@ -148,13 +141,19 @@ export default function Home() {
         ) : filteredResources.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-[#171718]/60">
-              {searchQuery ? "No resources found matching your search." : "No resources yet."}
+              {searchQuery
+                ? "No resources found matching your search."
+                : "No resources yet."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResources.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} showEdit={!!user} />
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                showEdit={!!user}
+              />
             ))}
           </div>
         )}

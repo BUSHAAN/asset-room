@@ -33,22 +33,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#ECE7E1] py-8 px-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <Image
-            src="/full_logo.png"
-            alt="Asset Room Logo"
-            width={200}
-            height={60}
-            className="mx-auto mb-4"
-            priority
-          />
-          <p className="text-[#171718]/70">
-            Login to add or edit resources
-          </p>
-        </div>
         <LoginForm />
       </div>
     </div>
   );
 }
-
