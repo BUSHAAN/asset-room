@@ -1,31 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "@/utils/firebase";
 import { useAuth } from "./contexts/AuthContext";
+import { useResources } from "@/hooks/useResources";
 import ResourceCard from "./components/ResourceCard";
 import Link from "next/link";
 import Image from "next/image";
 
-interface Resource {
-  id: string;
-  title: string;
-  url: string;
-  description: string;
-  tags: string[];
-}
-
 export default function Home() {
   const { user, logout } = useAuth();
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [filteredResources, setFilteredResources] = useState<Resource[]>([]);
+  const { resources, loading } = useResources();
+  const [filteredResources, setFilteredResources] = useState(resources);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchResources();
-  }, []);
 
   useEffect(() => {
     if (searchQuery.trim() === "") {
@@ -40,42 +26,6 @@ export default function Home() {
       setFilteredResources(filtered);
     }
   }, [searchQuery, resources]);
-
-  const fetchResources = async () => {
-    try {
-      const resourcesRef = collection(db, "resources");
-      const q = query(resourcesRef, orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const resourcesData: Resource[] = [];
-      querySnapshot.forEach((doc) => {
-        resourcesData.push({
-          id: doc.id,
-          ...doc.data(),
-        } as Resource);
-      });
-      setResources(resourcesData);
-      setFilteredResources(resourcesData);
-    } catch (error) {
-      console.error("Error fetching resources: ", error);
-      // If ordering fails (e.g., index not created), fetch without order
-      try {
-        const querySnapshot = await getDocs(collection(db, "resources"));
-        const resourcesData: Resource[] = [];
-        querySnapshot.forEach((doc) => {
-          resourcesData.push({
-            id: doc.id,
-            ...doc.data(),
-          } as Resource);
-        });
-        setResources(resourcesData);
-        setFilteredResources(resourcesData);
-      } catch (fallbackError) {
-        console.error("Error in fallback fetch: ", fallbackError);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">

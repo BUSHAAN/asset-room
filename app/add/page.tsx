@@ -1,17 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/utils/firebase";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 import ResourceForm from "@/app/components/ResourceForm";
+import { useAddResource } from "@/hooks/useResourceMutations";
 
 export default function AddPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { addResource, isLoading, error } = useAddResource();
 
   const handleSubmit = async (data: {
     title: string;
@@ -19,19 +14,11 @@ export default function AddPage() {
     description: string;
     tags: string[];
   }) => {
-    setIsLoading(true);
     try {
-      await addDoc(collection(db, "resources"), {
-        ...data,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      router.push("/");
-    } catch (error) {
-      console.error("Error adding resource: ", error);
+      await addResource(data);
+    } catch (err) {
+      // Error is handled by the hook, but we can show a user-friendly message
       alert("Failed to add resource. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -49,6 +36,11 @@ export default function AddPage() {
             Add New Resource
           </h1>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-[#171718]/5 p-8 shadow-xl">
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                {error.message}
+              </div>
+            )}
             <ResourceForm onSubmit={handleSubmit} isLoading={isLoading} />
           </div>
         </div>
