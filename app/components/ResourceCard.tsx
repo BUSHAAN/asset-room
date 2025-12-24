@@ -65,7 +65,7 @@ export default function ResourceCard({
       {/* Image Section */}
       <div className="w-full h-45 rounded-lg mb-4 bg-[#ECE7E1]">
         {imageState === "loading" && (
-          <div className="w-full h-full animate-spin bg-[#ECE7E1] flex items-center justify-center">
+          <div className="w-full h-full animate-spin flex items-center justify-center">
             <LoaderCircle />
           </div>
         )}
@@ -73,12 +73,12 @@ export default function ResourceCard({
           <img
             src={image}
             alt={resource.title}
-            className="w-full h-full object-cover rounded-xl"
+            className="w-full h-full object-cover rounded-lg"
             onError={() => setImageState("error")}
           />
         )}
         {imageState === "error" && (
-          <div className="w-full h-full flex items-center rounded-xl justify-center bg-[#ECE7E1] border border-[#171718]/10">
+          <div className="w-full h-full flex items-center rounded-lg justify-center bg-[#ECE7E1] border border-[#171718]/10">
             <div className="text-center p-4">
               <svg
                 className="w-8 h-8 mx-auto mb-2 text-[#171718]/30"
