@@ -63,7 +63,7 @@ export default function ResourceCard({
       className="relative p-4 bg-white/80 backdrop-blur-sm rounded-2xl border border-[#171718]/5 hover:border-[#171718]/20 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
       {/* Image Section */}
-      <div className="w-full h-45 rounded-lg mb-4 overflow-hidden bg-[#ECE7E1]">
+      <div className="w-full h-45 rounded-lg mb-4 bg-[#ECE7E1]">
         {imageState === "loading" && (
           <div className="w-full h-full animate-spin bg-[#ECE7E1] flex items-center justify-center">
             <LoaderCircle />
@@ -73,12 +73,12 @@ export default function ResourceCard({
           <img
             src={image}
             alt={resource.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-xl"
             onError={() => setImageState("error")}
           />
         )}
         {imageState === "error" && (
-          <div className="w-full h-full flex items-center justify-center bg-[#ECE7E1] border border-[#171718]/10">
+          <div className="w-full h-full flex items-center rounded-xl justify-center bg-[#ECE7E1] border border-[#171718]/10">
             <div className="text-center p-4">
               <svg
                 className="w-8 h-8 mx-auto mb-2 text-[#171718]/30"
