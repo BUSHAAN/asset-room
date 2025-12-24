@@ -24,7 +24,7 @@ export interface ResourceInput {
 export async function getResources(): Promise<Resource[]> {
   try {
     const resourcesRef = collection(db, "resources");
-    const q = query(resourcesRef, orderBy("createdAt", "desc"));
+    const q = query(resourcesRef, orderBy("title", "asc"));
     const querySnapshot = await getDocs(q);
     const resourcesData: Resource[] = [];
     querySnapshot.forEach((doc) => {
