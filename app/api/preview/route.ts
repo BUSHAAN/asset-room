@@ -13,6 +13,6 @@ export async function GET(request: Request) {
     const image = match ? match[1] : null;
     return NextResponse.json({ image });
   } catch (e) {
-    return NextResponse.json({ image: null });
+    return NextResponse.error();
   }
 }
