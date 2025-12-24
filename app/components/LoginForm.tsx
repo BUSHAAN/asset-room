@@ -31,15 +31,15 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-800">
-      <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+    <div className="w-full max-w-md mx-auto p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-[#171718]/5">
+      <h2 className="text-3xl font-serif font-semibold mb-6 text-[#171718]">
         Login
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+            className="block text-sm font-medium mb-2 text-[#171718]"
           >
             Email
           </label>
@@ -49,14 +49,14 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
             placeholder="Enter your email"
           />
         </div>
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+            className="block text-sm font-medium mb-2 text-[#171718]"
           >
             Password
           </label>
@@ -66,19 +66,19 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
             placeholder="Enter your password"
           />
         </div>
         {error && (
-          <div className="p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md text-red-700 dark:text-red-400 text-sm">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
             {error}
           </div>
         )}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-md transition-colors duration-200 disabled:cursor-not-allowed"
+          className="w-full py-3 px-6 bg-[#171718] hover:bg-[#171718]/90 disabled:bg-[#171718]/50 text-[#ECE7E1] font-medium rounded-full transition-all duration-300 disabled:cursor-not-allowed hover:shadow-lg"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

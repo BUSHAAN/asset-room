@@ -62,11 +62,11 @@ export default function ResourceForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+          className="block text-sm font-medium mb-2 text-[#171718]"
         >
           Title *
         </label>
@@ -76,7 +76,7 @@ export default function ResourceForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
           placeholder="Enter resource title"
         />
       </div>
@@ -84,7 +84,7 @@ export default function ResourceForm({
       <div>
         <label
           htmlFor="url"
-          className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+          className="block text-sm font-medium mb-2 text-[#171718]"
         >
           URL *
         </label>
@@ -94,7 +94,7 @@ export default function ResourceForm({
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
-          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
           placeholder="https://example.com"
         />
       </div>
@@ -102,7 +102,7 @@ export default function ResourceForm({
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+          className="block text-sm font-medium mb-2 text-[#171718]"
         >
           Description *
         </label>
@@ -112,7 +112,7 @@ export default function ResourceForm({
           onChange={(e) => setDescription(e.target.value)}
           required
           rows={4}
-          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300 resize-none"
           placeholder="Enter a short description"
         />
       </div>
@@ -120,7 +120,7 @@ export default function ResourceForm({
       <div>
         <label
           htmlFor="tags"
-          className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300"
+          className="block text-sm font-medium mb-2 text-[#171718]"
         >
           Tags
         </label>
@@ -129,16 +129,16 @@ export default function ResourceForm({
           id="tags"
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
-          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-5 py-3 border border-[#171718]/10 rounded-xl bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
           placeholder="tag1, tag2, tag3 (comma separated)"
         />
-        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-xs text-[#171718]/50">
           Separate tags with commas
         </p>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md text-red-700 dark:text-red-400 text-sm">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -146,7 +146,7 @@ export default function ResourceForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-md transition-colors duration-200 disabled:cursor-not-allowed"
+        className="w-full py-3 px-6 bg-[#171718] hover:bg-[#171718]/90 disabled:bg-[#171718]/50 text-[#ECE7E1] font-medium rounded-full transition-all duration-300 disabled:cursor-not-allowed hover:shadow-lg"
       >
         {isLoading ? "Saving..." : initialData ? "Update Resource" : "Add Resource"}
       </button>

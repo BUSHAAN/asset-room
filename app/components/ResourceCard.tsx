@@ -25,28 +25,28 @@ export default function ResourceCard({ resource, showEdit = false }: ResourceCar
   return (
     <div
       onClick={handleClick}
-      className="relative p-6 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-600 cursor-pointer transition-all duration-200 hover:shadow-lg"
+      className="relative p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-[#171718]/5 hover:border-[#171718]/20 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
       {showEdit && (
         <Link
           href={`/edit/${resource.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-4 right-4 px-3 py-1 text-xs bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-black dark:text-zinc-50 rounded transition-colors"
+          className="absolute top-4 right-4 px-3 py-1.5 text-xs bg-[#171718]/5 hover:bg-[#171718]/10 text-[#171718] rounded-full transition-all duration-300 font-medium"
         >
           Edit
         </Link>
       )}
-      <h3 className="text-xl font-semibold mb-2 text-black dark:text-zinc-50 pr-16">
+      <h3 className="text-xl font-serif font-semibold mb-3 text-[#171718] pr-16 leading-tight">
         {resource.title}
       </h3>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-2">
+      <p className="text-sm text-[#171718]/70 mb-4 line-clamp-2 leading-relaxed">
         {resource.description}
       </p>
       <div className="flex flex-wrap gap-2">
         {resource.tags.map((tag, index) => (
           <span
             key={index}
-            className="px-2 py-1 text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded"
+            className="px-3 py-1 text-xs bg-[#171718]/5 text-[#171718]/80 rounded-full font-medium"
           >
             {tag}
           </span>

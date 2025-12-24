@@ -20,9 +20,9 @@ export default function ProtectedRoute({
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-[#ECE7E1]">
         <div className="text-center">
-          <p className="text-lg text-zinc-600 dark:text-zinc-400">Loading...</p>
+          <p className="text-lg text-[#171718]/60">Loading...</p>
         </div>
       </div>
     );
