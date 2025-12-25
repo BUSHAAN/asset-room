@@ -1,31 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
-import { useResources } from "@/hooks/useResources";
 import ResourceCard from "./components/ResourceCard";
 import Link from "next/link";
 import Image from "next/image";
+import { useResourcesInfinite } from "@/hooks/useResourcesInfinite";
 
 export default function Home() {
   const { user, logout } = useAuth();
-  const { resources, loading } = useResources();
-  const [filteredResources, setFilteredResources] = useState(resources);
   const [searchQuery, setSearchQuery] = useState("");
+  const { resources, loading, loadingMore, hasMore, fetchMore } =
+    useResourcesInfinite(searchQuery);
 
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredResources(resources);
-    } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = resources.filter(
-        (resource) =>
-          resource.title.toLowerCase().includes(query) ||
-          resource.tags.some((tag) => tag.toLowerCase().includes(query))
-      );
-      setFilteredResources(filtered);
-    }
-  }, [searchQuery, resources]);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastResourceRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loadingMore) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchMore();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loadingMore, hasMore, fetchMore]
+  );
 
   return (
     <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">
@@ -88,7 +91,7 @@ export default function Home() {
           <div className="text-center py-20">
             <p className="text-[#171718]/60">Loading resources...</p>
           </div>
-        ) : filteredResources.length === 0 ? (
+        ) : resources.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-[#171718]/60">
               {searchQuery
@@ -98,13 +101,19 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredResources.map((resource) => (
+            {resources.map((resource, index) => (
               <ResourceCard
-                key={resource.id}
+                key={resource._id}
                 resource={resource}
                 showEdit={!!user}
+                ref={index === resources.length - 1 ? lastResourceRef : null}
               />
             ))}
+          </div>
+        )}
+        {loadingMore && (
+          <div className="text-center py-8">
+            <p className="text-[#171718]/60">Loading more...</p>
           </div>
         )}
       </div>

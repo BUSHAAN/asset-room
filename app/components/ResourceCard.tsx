@@ -1,19 +1,13 @@
 "use client";
+import { Resource } from "@/types/resource.types";
 import { LoaderCircle, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface Resource {
-  id: string;
-  title: string;
-  url: string;
-  description: string;
-  tags: string[];
-}
-
 interface ResourceCardProps {
   resource: Resource;
   showEdit?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 type ImageState = "loading" | "loaded" | "error";
@@ -21,6 +15,7 @@ type ImageState = "loading" | "loaded" | "error";
 export default function ResourceCard({
   resource,
   showEdit = false,
+  ref,
 }: ResourceCardProps) {
   const [image, setImage] = useState<string | null>(null);
   const [imageState, setImageState] = useState<ImageState>("loading");
@@ -59,6 +54,7 @@ export default function ResourceCard({
 
   return (
     <div
+      ref={ref}
       onClick={handleClick}
       className="relative p-4 bg-white/80 backdrop-blur-sm rounded-2xl border border-[#171718]/5 hover:border-[#171718]/20 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
@@ -104,7 +100,7 @@ export default function ResourceCard({
       <div className="relative">
         {showEdit && (
           <Link
-            href={`/edit/${resource.id}`}
+            href={`/edit/${resource._id}`}
             onClick={(e) => e.stopPropagation()}
             className="absolute top-0 right-0 px-3 py-1.5 text-xs bg-[#171718]/5 hover:bg-[#171718]/10 text-[#171718] rounded-full transition-all duration-300 font-medium z-10"
           >

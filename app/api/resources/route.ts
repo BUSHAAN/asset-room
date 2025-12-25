@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
   const [resources, total] = await Promise.all([
     Resource.find(searchQuery)
-      .sort(q ? { score: { $meta: "textScore" } } : { createdAt: -1 })
+      .sort(q ? { score: { $meta: "textScore" } } : { title: 1 })
       .skip(skip)
       .limit(limit),
     Resource.countDocuments(searchQuery),
