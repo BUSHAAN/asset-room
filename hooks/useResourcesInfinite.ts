@@ -1,6 +1,4 @@
-// hooks/useResourcesInfinite.ts
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Resource } from "@/types/resource.types";
 
 export function useResourcesInfinite(searchQuery: string) {
@@ -9,45 +7,50 @@ export function useResourcesInfinite(searchQuery: string) {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const fetchMore = async () => {
-    if (loading || (!hasMore && resources.length !== 0)) return;
-    console.log("fetchMore called");
+  const fetchPage = useCallback(
+    async (pageToFetch: number, replace = false) => {
+      if (loading) return;
 
-    setLoading(true);
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: pageToFetch.toString(),
+          limit: "9",
+          ...(searchQuery && { q: searchQuery }),
+        });
 
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "9",
-        ...(searchQuery && { q: searchQuery }),
-      });
+        const res = await fetch(`/api/resources?${params}`);
+        const json = await res.json();
 
-      const res = await fetch(`/api/resources?${params}`);
-      const json = await res.json();
+        const newResources = json.data || [];
 
-      const newResources = json.data || [];
+        setResources(prev =>
+          replace ? newResources : [...prev, ...newResources]
+        );
 
-      setResources((prev) => [...prev, ...newResources]);
-      setHasMore(page < json.pagination.totalPages);
-      if(!hasMore) setPage((prev) => prev + 1);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setHasMore(pageToFetch < json.pagination.totalPages);
+        setPage(pageToFetch + 1);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchQuery, loading]
+  );
 
-  // reset when search changes
+  // reset + first page on search change
   useEffect(() => {
     setResources([]);
-    setPage(1);
     setHasMore(true);
+    setPage(1);
+    fetchPage(1, true);
   }, [searchQuery]);
 
-  // initial load
-  useEffect(() => {
-    fetchMore();
-  }, [searchQuery]);
+  const fetchMore = () => {
+    if (!hasMore || loading) return;
+    fetchPage(page);
+  };
 
   return {
     resources,
