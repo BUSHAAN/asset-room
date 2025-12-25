@@ -56,16 +56,17 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const user = await requireAuth(req);
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { id } = await context.params;
   await connectDB();
 
-  await Resource.findByIdAndDelete(params.id);
+  await Resource.findByIdAndDelete(id);
 
   return NextResponse.json({ success: true });
 }
