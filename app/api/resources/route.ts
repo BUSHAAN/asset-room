@@ -15,13 +15,17 @@ export async function GET(req: Request) {
 
   const skip = (page - 1) * limit;
 
-  const searchQuery = q ? { $text: { $search: q } } : {};
+  const searchQuery = q
+    ? {
+        $or: [
+          { title: { $regex: q, $options: "i" } },
+          { tags: { $regex: q, $options: "i" } },
+        ],
+      }
+    : {};
 
   const [resources, total] = await Promise.all([
-    Resource.find(searchQuery)
-      .sort(q ? { score: { $meta: "textScore" } } : { title: 1 })
-      .skip(skip)
-      .limit(limit),
+    Resource.find(searchQuery).sort({ title: 1 }).skip(skip).limit(limit),
     Resource.countDocuments(searchQuery),
   ]);
 
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  
+
   await connectDB();
 
   const body = await req.json();
