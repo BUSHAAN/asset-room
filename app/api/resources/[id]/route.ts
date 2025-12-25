@@ -4,15 +4,36 @@ import Resource from "@/models/Resource";
 import { resourceSchema } from "@/validators/resource";
 import { requireAuth } from "@/lib/auth";
 
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  await connectDB();
+
+  const { id } = await context.params;
+
+  console.log("Fetching resource with ID:", id);
+
+  const resource = await Resource.findById(id);
+
+  if (!resource) {
+    return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(resource);
+}
+
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const user = await requireAuth(req);
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const { id } = await context.params;
 
   await connectDB();
 
@@ -26,7 +47,7 @@ export async function PUT(
     );
   }
 
-  const updated = await Resource.findByIdAndUpdate(params.id, parsed.data, {
+  const updated = await Resource.findByIdAndUpdate(id, parsed.data, {
     new: true,
   });
 
