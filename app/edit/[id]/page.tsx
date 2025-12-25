@@ -4,14 +4,37 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 import ResourceForm from "@/app/components/ResourceForm";
-import { useGetResource, useUpdateResource } from "@/hooks/useResourceMutations";
+import useFetch from "@/hooks/useFetch";
+import { Resource } from "@/types/resource.types";
+import { useEffect, useState } from "react";
 
 export default function EditPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
-  const { resource, loading, error: fetchError } = useGetResource(id);
-  const { updateResource, isLoading, error: updateError } = useUpdateResource();
+  const [resource, setResource] = useState<Resource | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<Error | null>(null);
+  const [updateError, setUpdateError] = useState<Error | null>(null);
+  const loading = isLoading && !resource;
+  const { customFetch } = useFetch();
+
+  useEffect(() => {
+    const fetchResource = async () => {
+      try {
+        setIsFetching(true);
+        const data = await customFetch(`/api/resources/${id}`, "GET");
+        setResource(data);
+      } catch (err) {
+        console.error("Failed to fetch resource:", err);
+        setFetchError(err as Error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchResource();
+  }, [id]);
 
   const handleSubmit = async (data: {
     title: string;
@@ -20,18 +43,22 @@ export default function EditPage() {
     tags: string[];
   }) => {
     try {
-      await updateResource(id, data);
+      setIsLoading(true);
+      await customFetch(`/api/resources/${id}`, "PUT", data);
+      router.push(`/`);
     } catch (err) {
       // Error is handled by the hook, but we can show a user-friendly message
       alert("Failed to update resource. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Redirect if resource not found
-  if (!loading && !resource) {
-    router.push("/");
-    return null;
-  }
+  // // Redirect if resource not found
+  // if (!loading && !resource) {
+  //   router.push("/");
+  //   return null;
+  // }
 
   const initialData = resource
     ? {
@@ -52,9 +79,22 @@ export default function EditPage() {
             </div>
           ) : (
             <>
-              <Link href="/" className="inline-flex items-center gap-2 text-[#171718]/70 hover:text-[#171718] mb-8 transition-colors duration-300">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-[#171718]/70 hover:text-[#171718] mb-8 transition-colors duration-300"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 Back to home
               </Link>
@@ -67,12 +107,18 @@ export default function EditPage() {
                     {fetchError?.message || updateError?.message}
                   </div>
                 )}
-                {initialData && (
-                  <ResourceForm
-                    initialData={initialData}
-                    onSubmit={handleSubmit}
-                    isLoading={isLoading}
-                  />
+                {isFetching ? (
+                  <div className="text-center py-10">
+                    <p className="text-lg text-[#171718]/60">Loading...</p>
+                  </div>
+                ) : (
+                  initialData && (
+                    <ResourceForm
+                      initialData={initialData}
+                      onSubmit={handleSubmit}
+                      isLoading={isLoading}
+                    />
+                  )
                 )}
               </div>
             </>
@@ -82,4 +128,3 @@ export default function EditPage() {
     </ProtectedRoute>
   );
 }
-

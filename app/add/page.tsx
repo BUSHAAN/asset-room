@@ -3,10 +3,13 @@
 import Link from "next/link";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 import ResourceForm from "@/app/components/ResourceForm";
-import { useAddResource } from "@/hooks/useResourceMutations";
+import { useState } from "react";
+import useFetch from "@/hooks/useFetch";
 
 export default function AddPage() {
-  const { addResource, isLoading, error } = useAddResource();
+  const [isLoading, setIsLoading] = useState(false);
+  const { customFetch } = useFetch();
+  const [error, setError] = useState<Error | null>(null);
 
   const handleSubmit = async (data: {
     title: string;
@@ -15,10 +18,17 @@ export default function AddPage() {
     tags: string[];
   }) => {
     try {
-      await addResource(data);
-    } catch (err) {
+      setIsLoading(true);
+      console.log("Submitting data:", data);
+      await customFetch("/api/resources", "POST", data);
+      // Redirect to home after successful addition
+      window.location.href = "/";
+    } catch (error) {
       // Error is handled by the hook, but we can show a user-friendly message
-      alert("Failed to add resource. Please try again.");
+      setError(new Error("Failed to add resource. Please try again."));
+      console.log("Failed to add resource. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -26,9 +36,22 @@ export default function AddPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-[#171718]/70 hover:text-[#171718] mb-8 transition-colors duration-300">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-[#171718]/70 hover:text-[#171718] mb-8 transition-colors duration-300"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to home
           </Link>
@@ -48,4 +71,3 @@ export default function AddPage() {
     </ProtectedRoute>
   );
 }
-

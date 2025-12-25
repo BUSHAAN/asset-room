@@ -1,37 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
-import { useResources } from "@/hooks/useResources";
 import ResourceCard from "./components/ResourceCard";
 import Link from "next/link";
 import Image from "next/image";
+import { useResourcesInfinite } from "@/hooks/useResourcesInfinite";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { LoaderCircle } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function Home() {
   const { user, logout } = useAuth();
-  const { resources, loading } = useResources();
-  const [filteredResources, setFilteredResources] = useState(resources);
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredResources(resources);
-    } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = resources.filter(
-        (resource) =>
-          resource.title.toLowerCase().includes(query) ||
-          resource.tags.some((tag) => tag.toLowerCase().includes(query))
-      );
-      setFilteredResources(filtered);
-    }
-  }, [searchQuery, resources]);
+  const debouncedSearch = useDebounce(searchQuery, 400);
+  const { resources, loading, hasMore, fetchMore } =
+    useResourcesInfinite(debouncedSearch);
 
   return (
     <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8">
         {/* Header */}
-        <div className="mb-12 flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Link href="/" className="flex items-center">
               <Image
@@ -73,7 +63,6 @@ export default function Home() {
         </div>
 
         {/* Search */}
-        <div className="mb-8">
           <input
             type="text"
             value={searchQuery}
@@ -81,14 +70,13 @@ export default function Home() {
             placeholder="Search by title or tags..."
             className="w-full max-w-md px-5 py-3 border border-[#171718]/10 rounded-full bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
           />
-        </div>
 
         {/* Resources Grid */}
-        {loading ? (
+        {loading && resources.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-[#171718]/60">Loading resources...</p>
+            <LoaderCircle className="w-8 h-8 mx-auto mb-4 text-[#171718]/60 animate-spin" />
           </div>
-        ) : filteredResources.length === 0 ? (
+        ) : resources.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-[#171718]/60">
               {searchQuery
@@ -97,17 +85,44 @@ export default function Home() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredResources.map((resource) => (
-              <ResourceCard
-                key={resource.id}
-                resource={resource}
-                showEdit={!!user}
-              />
-            ))}
-          </div>
+          <InfiniteScroll
+            dataLength={resources.length}
+            next={fetchMore}
+            hasMore={hasMore}
+            loader={
+              <p className="text-center py-8 text-[#171718]/60">Loading...</p>
+            }
+            endMessage={
+              <p className="text-center py-12 text-[#171718]/60">
+                You have reached the end
+              </p>
+            }
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-1">
+              {resources.map((resource) => (
+                <ResourceCard
+                  key={resource._id}
+                  resource={resource}
+                  showEdit={!!user}
+                />
+              ))}
+            </div>
+          </InfiniteScroll>
         )}
       </div>
     </div>
   );
+}
+
+{
+  /* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {resources.map((resource, index) => (
+              <ResourceCard
+                key={resource._id}
+                resource={resource}
+                showEdit={!!user}
+                ref={index === resources.length - 1 ? lastResourceRef : null}
+              />
+            ))}
+          </div> */
 }
