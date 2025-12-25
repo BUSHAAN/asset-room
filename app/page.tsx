@@ -19,9 +19,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#ECE7E1] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8">
         {/* Header */}
-        <div className="mb-12 flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Link href="/" className="flex items-center">
               <Image
@@ -63,7 +63,6 @@ export default function Home() {
         </div>
 
         {/* Search */}
-        <div className="mb-8">
           <input
             type="text"
             value={searchQuery}
@@ -71,7 +70,6 @@ export default function Home() {
             placeholder="Search by title or tags..."
             className="w-full max-w-md px-5 py-3 border border-[#171718]/10 rounded-full bg-white/50 backdrop-blur-sm text-[#171718] placeholder:text-[#171718]/40 focus:outline-none focus:ring-2 focus:ring-[#171718]/20 focus:border-[#171718]/20 transition-all duration-300"
           />
-        </div>
 
         {/* Resources Grid */}
         {loading && resources.length === 0 ? (
@@ -100,7 +98,7 @@ export default function Home() {
               </p>
             }
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-1">
               {resources.map((resource) => (
                 <ResourceCard
                   key={resource._id}
