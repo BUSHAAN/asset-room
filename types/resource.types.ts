@@ -4,6 +4,7 @@ export interface Resource {
   url: string;
   description: string;
   tags: string[];
+  previewImage?: string | null;
   createdAt?: any;
   updatedAt?: any;
 }

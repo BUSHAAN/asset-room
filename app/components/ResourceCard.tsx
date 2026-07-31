@@ -1,6 +1,7 @@
 "use client";
 
 import { Resource } from "@/types/resource.types";
+import { fetchPreviewImage } from "@/lib/preview-client";
 import { LoaderCircle, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ interface ResourceCardProps {
   showEdit?: boolean;
   ref?: React.Ref<HTMLDivElement>;
   index?: number;
+  onTagClick?: (tag: string) => void;
 }
 
 type ImageState = "loading" | "loaded" | "error";
@@ -19,36 +21,43 @@ export default function ResourceCard({
   showEdit = false,
   ref,
   index = 0,
+  onTagClick,
 }: ResourceCardProps) {
-  const [image, setImage] = useState<string | null>(null);
-  const [imageState, setImageState] = useState<ImageState>("loading");
+  const [image, setImage] = useState<string | null>(
+    resource.previewImage || null
+  );
+  const [imageState, setImageState] = useState<ImageState>(
+    resource.previewImage ? "loaded" : "loading"
+  );
 
   useEffect(() => {
+    if (resource.previewImage) {
+      setImage(resource.previewImage);
+      setImageState("loaded");
+      return;
+    }
+
+    let cancelled = false;
     setImageState("loading");
     setImage(null);
 
-    fetch(`/api/preview?url=${encodeURIComponent(resource.url)}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch preview");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.image) {
-          setImage(data.image);
-          setImageState("loaded");
-        } else {
-          setImageState("error");
-        }
-      })
-      .catch(() => {
+    fetchPreviewImage(resource.url).then((preview) => {
+      if (cancelled) return;
+      if (preview) {
+        setImage(preview);
+        setImageState("loaded");
+      } else {
         setImageState("error");
-      });
-  }, [resource.url]);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resource.url, resource.previewImage]);
 
   const handleClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest("a")) {
+    if ((e.target as HTMLElement).closest("a, button")) {
       return;
     }
     window.open(resource.url, "_blank", "noopener,noreferrer");
@@ -117,14 +126,28 @@ export default function ResourceCard({
           {resource.description}
         </p>
         <div className="flex flex-wrap gap-2">
-          {resource.tags.map((tag, tagIndex) => (
-            <span
-              key={tagIndex}
-              className="px-3 py-1 text-[13px] font-medium bg-surface-soft text-ink/80 rounded-full border border-hairline"
-            >
-              {tag}
-            </span>
-          ))}
+          {resource.tags.map((tag, tagIndex) =>
+            onTagClick ? (
+              <button
+                key={tagIndex}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTagClick(tag);
+                }}
+                className="px-3 py-1 text-[13px] font-medium bg-surface-soft text-ink/80 rounded-full border border-hairline hover:border-muted hover:text-ink transition-colors"
+              >
+                {tag}
+              </button>
+            ) : (
+              <span
+                key={tagIndex}
+                className="px-3 py-1 text-[13px] font-medium bg-surface-soft text-ink/80 rounded-full border border-hairline"
+              >
+                {tag}
+              </span>
+            )
+          )}
         </div>
       </div>
     </div>

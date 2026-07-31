@@ -20,12 +20,15 @@ export default function AddPage() {
   }) => {
     try {
       setIsLoading(true);
-      console.log("Submitting data:", data);
+      setError(null);
       await customFetch("/api/resources", "POST", data);
       window.location.href = "/";
-    } catch (error) {
-      setError(new Error("Failed to add resource. Please try again."));
-      console.log("Failed to add resource. Please try again.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err
+          : new Error("Failed to add resource. Please try again.")
+      );
     } finally {
       setIsLoading(false);
     }

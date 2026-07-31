@@ -1,72 +1,141 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongoose";
 import Resource from "@/models/Resource";
 import { resourceSchema } from "@/validators/resource";
 import { requireAuth } from "@/lib/auth";
+import { fetchOgImage } from "@/lib/preview";
+
+function invalidIdResponse() {
+  return NextResponse.json({ error: "Invalid resource id" }, { status: 400 });
+}
+
+function notFoundResponse() {
+  return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+}
 
 export async function GET(
-  req: Request,
+  _req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  await connectDB();
+  try {
+    const { id } = await context.params;
 
-  const { id } = await context.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return invalidIdResponse();
+    }
 
-  console.log("Fetching resource with ID:", id);
+    await connectDB();
 
-  const resource = await Resource.findById(id);
+    const resource = await Resource.findById(id);
 
-  if (!resource) {
-    return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+    if (!resource) {
+      return notFoundResponse();
+    }
+
+    return NextResponse.json(resource);
+  } catch (err) {
+    console.error("GET /api/resources/[id]:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch resource" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(resource);
 }
 
 export async function PUT(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const user = await requireAuth(req);
+  try {
+    const user = await requireAuth(req);
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { id } = await context.params;
+    const { id } = await context.params;
 
-  await connectDB();
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return invalidIdResponse();
+    }
 
-  const body = await req.json();
-  const parsed = resourceSchema.safeParse(body);
+    await connectDB();
 
-  if (!parsed.success) {
+    const body = await req.json();
+    const parsed = resourceSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { errors: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const existing = await Resource.findById(id);
+    if (!existing) {
+      return notFoundResponse();
+    }
+
+    const urlChanged = existing.url !== parsed.data.url;
+    const previewImage = urlChanged
+      ? await fetchOgImage(parsed.data.url)
+      : existing.previewImage;
+
+    const updated = await Resource.findByIdAndUpdate(
+      id,
+      {
+        ...parsed.data,
+        previewImage: previewImage ?? undefined,
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return notFoundResponse();
+    }
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("PUT /api/resources/[id]:", err);
     return NextResponse.json(
-      { errors: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+      { error: "Failed to update resource" },
+      { status: 500 }
     );
   }
-
-  const updated = await Resource.findByIdAndUpdate(id, parsed.data, {
-    new: true,
-  });
-
-  return NextResponse.json(updated);
 }
 
 export async function DELETE(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const user = await requireAuth(req);
+  try {
+    const user = await requireAuth(req);
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return invalidIdResponse();
+    }
+
+    await connectDB();
+
+    const deleted = await Resource.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return notFoundResponse();
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("DELETE /api/resources/[id]:", err);
+    return NextResponse.json(
+      { error: "Failed to delete resource" },
+      { status: 500 }
+    );
   }
-  const { id } = await context.params;
-  await connectDB();
-
-  await Resource.findByIdAndDelete(id);
-
-  return NextResponse.json({ success: true });
 }
