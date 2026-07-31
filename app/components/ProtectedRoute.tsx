@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { LoaderCircle } from "lucide-react";
 
 export default function ProtectedRoute({
   children,
@@ -20,10 +21,8 @@ export default function ProtectedRoute({
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#ECE7E1]">
-        <div className="text-center">
-          <p className="text-lg text-[#171718]/60">Loading...</p>
-        </div>
+      <div className="flex min-h-screen items-center justify-center app-atmosphere">
+        <LoaderCircle className="w-8 h-8 text-muted animate-spin" />
       </div>
     );
   }
@@ -34,4 +33,3 @@ export default function ProtectedRoute({
 
   return <>{children}</>;
 }
-
