@@ -225,6 +225,14 @@ textarea.input-field {
   animation: fade-up 400ms ease-out both;
 }
 
+.edge-credit {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
   .animate-shimmer {

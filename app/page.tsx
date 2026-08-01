@@ -86,9 +86,11 @@ function HomeContent() {
           {isSearching && (
             <p className="text-sm text-muted">Searching…</p>
           )}
-          {!isSearching && !loading && !error && debouncedSearch.trim() && (
+          {!isSearching && !loading && !error && (
             <p className="text-sm text-muted">
-              {total} {total === 1 ? "result" : "results"}
+              {debouncedSearch.trim()
+                ? `${total} ${total === 1 ? "result" : "results"}`
+                : `${total} ${total === 1 ? "resource" : "resources"}`}
             </p>
           )}
         </div>
