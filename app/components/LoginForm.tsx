@@ -34,7 +34,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto p-8 bg-surface rounded-lg border border-hairline">
       <h2 className="font-display text-[28px] tracking-[-0.02em] mb-6 text-ink">
-        Login
+        Admin sign in
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>

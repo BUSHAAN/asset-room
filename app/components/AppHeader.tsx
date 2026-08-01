@@ -74,7 +74,7 @@ export default function AppHeader({ showTagline = true }: AppHeaderProps) {
       </div>
 
       <div className="flex items-center justify-end shrink-0">
-        {user ? (
+        {user && (
           <div ref={menuRef} className="relative">
             <button
               type="button"
@@ -116,10 +116,6 @@ export default function AppHeader({ showTagline = true }: AppHeaderProps) {
               </nav>
             )}
           </div>
-        ) : (
-          <Link href="/login" className="btn-primary">
-            Sign in
-          </Link>
         )}
       </div>
     </header>
