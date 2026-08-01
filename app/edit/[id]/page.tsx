@@ -89,7 +89,7 @@ export default function EditPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen app-atmosphere">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <AppHeader showTagline={false} />
 
           <div className="max-w-2xl mx-auto mt-10">

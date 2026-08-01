@@ -72,7 +72,7 @@ export default function ResourceCard({
       style={{ animationDelay: `${staggerDelay}ms` }}
       className="animate-fade-up relative p-4 bg-surface rounded-lg border border-hairline cursor-pointer transition-[border-color,background-color] duration-200 hover:border-muted hover:bg-[#2a2825]"
     >
-      <div className="w-full aspect-[16/10] rounded-md mb-4 bg-surface-soft overflow-hidden">
+      <div className="w-full aspect-16/10 rounded-md mb-4 bg-surface-soft overflow-hidden">
         {imageState === "loading" && (
           <div className="w-full h-full animate-shimmer flex items-center justify-center">
             <LoaderCircle className="w-5 h-5 text-muted animate-spin" />

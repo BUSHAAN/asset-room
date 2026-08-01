@@ -24,21 +24,19 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     if (q) {
-      // Strip Mongo text-search operators so user input stays literal
-      const safeQ = q.replace(/["\\]/g, " ").replace(/\s+/g, " ").trim();
-      if (!safeQ) {
-        return NextResponse.json({
-          data: [],
-          pagination: { total: 0, page, limit, totalPages: 0 },
-        });
-      }
+      // Substring match (typeahead): $text is token-based and won't match
+      // prefixes like "colo" → "color". Escape regex metacharacters.
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const filter = {
+        $or: [
+          { title: { $regex: escaped, $options: "i" } },
+          { description: { $regex: escaped, $options: "i" } },
+          { tags: { $regex: escaped, $options: "i" } },
+        ],
+      };
 
-      const filter = { $text: { $search: safeQ } };
       const [resources, total] = await Promise.all([
-        Resource.find(filter, { score: { $meta: "textScore" } })
-          .sort({ score: { $meta: "textScore" } })
-          .skip(skip)
-          .limit(limit),
+        Resource.find(filter).sort({ title: 1 }).skip(skip).limit(limit),
         Resource.countDocuments(filter),
       ]);
 

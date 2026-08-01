@@ -59,7 +59,7 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen app-atmosphere">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
         <AppHeader />
 
         <div className="flex flex-col gap-3 max-w-md">
