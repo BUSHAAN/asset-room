@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 import ResourceForm from "@/app/components/ResourceForm";
+import DeleteResourceButton from "@/app/components/DeleteResourceButton";
 import AppHeader from "@/app/components/AppHeader";
 import useFetch from "@/hooks/useFetch";
 import { Resource } from "@/types/resource.types";
@@ -137,6 +138,22 @@ export default function EditPage() {
                 )
               )}
             </div>
+
+            {!isFetching && resource && (
+              <div className="mt-8 rounded-lg border border-[rgba(198,69,69,0.35)] bg-error-surface p-6">
+                <h2 className="font-display text-xl tracking-[-0.02em] text-ink mb-1">
+                  Danger zone
+                </h2>
+                <p className="text-sm text-muted mb-4 leading-relaxed">
+                  Permanently remove this resource from the library. This cannot
+                  be undone.
+                </p>
+                <DeleteResourceButton
+                  resourceId={resource._id}
+                  resourceTitle={resource.title}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
