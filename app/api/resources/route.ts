@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
-import Resource from "@/models/Resource";
+import Resource, { TITLE_COLLATION } from "@/models/Resource";
 import { resourceSchema } from "@/validators/resource";
 import { requireAuth } from "@/lib/auth";
 import { fetchOgImage } from "@/lib/preview";
@@ -36,7 +36,11 @@ export async function GET(req: Request) {
       };
 
       const [resources, total] = await Promise.all([
-        Resource.find(filter).sort({ title: 1 }).skip(skip).limit(limit),
+        Resource.find(filter)
+          .collation(TITLE_COLLATION)
+          .sort({ title: 1 })
+          .skip(skip)
+          .limit(limit),
         Resource.countDocuments(filter),
       ]);
 
@@ -52,7 +56,11 @@ export async function GET(req: Request) {
     }
 
     const [resources, total] = await Promise.all([
-      Resource.find({}).sort({ title: 1 }).skip(skip).limit(limit),
+      Resource.find({})
+        .collation(TITLE_COLLATION)
+        .sort({ title: 1 })
+        .skip(skip)
+        .limit(limit),
       Resource.countDocuments({}),
     ]);
 

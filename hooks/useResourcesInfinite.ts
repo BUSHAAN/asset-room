@@ -34,7 +34,7 @@ export function useResourcesInfinite(searchQuery: string) {
         const trimmed = searchQuery.trim();
         const params = new URLSearchParams({
           page: pageToFetch.toString(),
-          limit: "9",
+          limit: "12",
           ...(trimmed && { q: trimmed }),
         });
 

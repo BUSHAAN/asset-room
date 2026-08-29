@@ -59,40 +59,54 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen app-atmosphere">
-      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
+      <a
+        href="#library"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-ink focus:ring-2 focus:ring-primary/50"
+      >
+        Skip to resources
+      </a>
+      <div className="max-w-600 mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
         <AppHeader />
 
+        <main id="library">
         <div className="flex flex-col gap-3 max-w-md">
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by title, description, or tags..."
-              className="input-field w-full pr-10"
+              placeholder="Search by title, description, or tags…"
+              className="input-field w-full pr-12"
               aria-label="Search resources"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={clearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink transition-colors"
+                className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex size-10 items-center justify-center text-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-md"
                 aria-label="Clear search"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
           </div>
-          {isSearching && (
-            <p className="text-sm text-muted">Searching…</p>
-          )}
-          {!isSearching && !loading && !error && (
-            <p className="text-sm text-muted">
-              {debouncedSearch.trim()
-                ? `${total} ${total === 1 ? "result" : "results"}`
-                : `${total} ${total === 1 ? "resource" : "resources"}`}
-            </p>
-          )}
+          <p className="text-sm text-muted min-h-5">
+            {isSearching
+              ? "Searching…"
+              : error
+                ? "\u00a0"
+                : loading && resources.length === 0
+                  ? "\u00a0"
+                  : `${total} ${
+                      debouncedSearch.trim()
+                        ? total === 1
+                          ? "result"
+                          : "results"
+                        : total === 1
+                          ? "resource"
+                          : "resources"
+                    }`}
+          </p>
         </div>
 
         {error && resources.length === 0 ? (
@@ -132,16 +146,20 @@ function HomeContent() {
               dataLength={resources.length}
               next={fetchMore}
               hasMore={hasMore}
+              hasChildren
+              scrollThreshold="200px"
               loader={
-                <p className="text-center py-8 text-muted text-sm">Loading...</p>
+                <div className="overflow-anchor-none flex h-20 items-center justify-center">
+                  <p className="text-muted text-sm">Loading…</p>
+                </div>
               }
               endMessage={
-                <p className="text-center py-12 text-muted text-sm">
+                <p className="overflow-anchor-none flex h-20 items-center justify-center text-muted text-sm">
                   You have reached the end
                 </p>
               }
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-1">
                 {resources.map((resource, index) => (
                   <ResourceCard
                     key={resource._id}
@@ -155,6 +173,7 @@ function HomeContent() {
             </InfiniteScroll>
           </>
         )}
+        </main>
       </div>
     </div>
   );
